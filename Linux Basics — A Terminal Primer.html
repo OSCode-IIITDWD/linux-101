@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linux Basics — A Terminal Primer &amp; Reference Guide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="light"] {
+  --bg: #FAF9F5;
+  --paper: #FFFFFF;
+  --ink: #1B211E;
+  --muted: #5C635B;
+  --accent: #226744;
+  --accent-soft: #EAF2EC;
+  --accent-border: #9DC3AC;
+  --line: #E2DFD4;
+  --code-bg: #F1EFE6;
+  --code-header: #E7E4D9;
+  --warn: #A64724;
+  --warn-soft: #F9EFEA;
+  --warn-border: #E8A88E;
+  --info: #1B587A;
+  --info-soft: #E9F2F7;
+  --info-border: #93BED5;
+  --badge-bg: #E4E1D5;
+  color-scheme: light;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  --bg: #141715;
+  --paper: #1B1F1C;
+  --ink: #E6EAE5;
+  --muted: #959E93;
+  --accent: #52B788;
+  --accent-soft: #1C2D23;
+  --accent-border: #2D5A40;
+  --line: #29302B;
+  --code-bg: #202622;
+  --code-header: #262E29;
+  --warn: #E07A5F;
+  --warn-soft: #2F1E19;
+  --warn-border: #6B3423;
+  --info: #5CA4CC;
+  --info-soft: #182731;
+  --info-border: #294D62;
+  --badge-bg: #2B332D;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; scroll-padding-top: 32px; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+.wrap {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 56px 24px 120px;
+}
+
+/* Header & Typography */
+header.hero {
+  margin-bottom: 48px;
+  padding-bottom: 28px;
+  border-bottom: 2px solid var(--line);
+}
+.kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13.5px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+.kicker::before {
+  content: "$ ";
+  color: var(--accent);
+  font-weight: 600;
+}
+h1 {
+  font-family: 'IBM Plex Serif', serif;
+  font-weight: 600;
+  font-size: 2.8rem;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  letter-spacing: -0.015em;
+}
+.dek {
+  color: var(--muted);
+  font-size: 1.12rem;
+  line-height: 1.6;
+  max-width: 65ch;
+  margin: 0;
+}
+
+/* Nav jump menu */
+.nav-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 28px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.nav-pills a {
+  display: inline-block;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-pills a:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Section styling */
+section.cmd-section {
+  padding: 44px 0 28px;
+  border-top: 1px solid var(--line);
+}
+h2 {
+  font-family: 'IBM Plex Serif', serif;
+  font-weight: 600;
+  font-size: 1.7rem;
+  margin: 0 0 8px;
+  line-height: 1.25;
+}
+h2 .num {
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--accent);
+  font-size: 1.05rem;
+  margin-right: 6px;
+}
+h3 {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1.22rem;
+  margin: 26px 0 8px;
+  color: var(--ink);
+}
+h4 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+  margin: 20px 0 6px;
+}
+
+p { margin: 10px 0 16px; }
+.hint { color: var(--muted); font-size: 0.95rem; }
+
+/* Code Blocks & Command Snippets */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px 18px;
+  overflow-x: auto;
+  margin: 14px 0 18px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.91rem;
+  line-height: 1.6;
+}
+code {
+  font-family: 'IBM Plex Mono', monospace;
+  background: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.88em;
+  border: 1px solid rgba(120, 120, 120, 0.15);
+}
+pre code {
+  background: none;
+  padding: 0;
+  border: none;
+  font-size: inherit;
+}
+.pre-comment { color: var(--muted); font-style: italic; }
+.pre-cmd { font-weight: 600; color: var(--ink); }
+.pre-out { color: var(--muted); }
+
+/* Badges & Inline Elements */
+.flag {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 0.82rem;
+  background: var(--badge-bg);
+  color: var(--ink);
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+kbd {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.82rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-bottom: 2px solid var(--line);
+  border-radius: 4px;
+  padding: 2px 6px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 24px;
+  font-size: 0.94rem;
+}
+th, td {
+  text-align: left;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+th {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(0,0,0,0.02);
+}
+td code { white-space: nowrap; }
+
+/* Callout Boxes */
+.callout {
+  border-left: 4px solid var(--accent);
+  background: var(--accent-soft);
+  border-radius: 0 6px 6px 0;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 0.96rem;
+}
+.callout strong { color: var(--accent); }
+.callout.warn {
+  border-left-color: var(--warn);
+  background: var(--warn-soft);
+}
+.callout.warn strong { color: var(--warn); }
+.callout.info {
+  border-left-color: var(--info);
+  background: var(--info-soft);
+}
+.callout.info strong { color: var(--info); }
+
+/* Breakdown cards */
+.breakdown {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px 20px;
+  margin: 18px 0;
+}
+.breakdown-title {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+/* Grids & Trees */
+.grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 32px;
+}
+@media (max-width: 680px) {
+  .grid2 { grid-template-columns: 1fr; }
+}
+.tree {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 16px 18px;
+  white-space: pre;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+/* Interactive Details / Dropdowns */
+details {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  margin: 12px 0;
+  padding: 10px 14px;
+}
+details[open] {
+  padding-bottom: 16px;
+}
+summary {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+summary::marker {
+  color: var(--accent);
+}
+details p { margin: 10px 0 6px; font-size: 0.94rem; }
+
+footer {
+  margin-top: 80px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-family: 'IBM Plex Mono', monospace;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <p class="kicker" style="margin:0;">man 1 intro — A Comprehensive Linux Terminal Guide</p>
+    <button id="theme-toggle" onclick="toggleTheme()" style="background:var(--paper); border:1px solid var(--line); color:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:12px; padding:4px 10px; border-radius:4px; cursor:pointer; display:inline-flex; align-items:center; gap:6px;">☀ Light</button>
+  </div>
+  <h1>Linux Basics</h1>
+  <p class="dek">An in-depth, practical manual covering command anatomy, filesystem mechanics, file operations, redirection, permissions, processes, and essential terminal muscle memory.</p>
+
+  <ul class="nav-pills">
+    <li><a href="#wsl">00. Setup WSL</a></li>
+    <li><a href="#anatomy">01. Anatomy &amp; Paths</a></li>
+    <li><a href="#navigating">02. Navigation</a></li>
+    <li><a href="#files">03. Files &amp; Folders</a></li>
+    <li><a href="#viewing">04. Inspecting Files</a></li>
+    <li><a href="#streams">05. Pipes &amp; Streams</a></li>
+    <li><a href="#searching">06. Searching</a></li>
+    <li><a href="#permissions">07. Permissions</a></li>
+    <li><a href="#processes">08. Processes &amp; Storage</a></li>
+    <li><a href="#network">09. Networking</a></li>
+    <li><a href="#fhs">10. Filesystem Map</a></li>
+    <li><a href="#shortcuts">11. Terminal Shortcuts</a></li>
+    <li><a href="#lab">12. Practical Lab</a></li>
+  </ul>
+</header>
+
+<!-- SECTION 00: WSL INSTALLATION -->
+<section id="wsl" class="cmd-section">
+  <h2><span class="num">00</span> Setting Up WSL on Windows</h2>
+  <p><strong>WSL (Windows Subsystem for Linux)</strong> lets you run a native Linux environment directly inside Windows 10/11 with no virtual machine overhead. Your Windows files are available under <code>/mnt/c/</code>.</p>
+
+  <pre><code><span class="pre-comment"># 1. Open PowerShell as Administrator and install Ubuntu:</span>
+wsl --install
+
+<span class="pre-comment"># 2. Restart your PC when prompted.</span>
+
+<span class="pre-comment"># 3. Open Ubuntu from Start, enter a username/password, and update:</span>
+sudo apt update &amp;&amp; sudo apt upgrade -y</code></pre>
+  <p class="hint">Passwords in the terminal are invisible while typing (no dots/asterisks). To open your Linux directory in Windows Explorer, run <code>explorer.exe .</code></p>
+</section>
+
+<!-- SECTION 01: ANATOMY & PATHS -->
+<section id="anatomy" class="cmd-section">
+  <h2><span class="num">01</span> The Terminal Mental Model &amp; Command Anatomy</h2>
+  <p>In Linux, the terminal is a window running a <strong>shell</strong> (such as <code>bash</code> or <code>zsh</code>). The shell is a command language interpreter: it reads text commands typed by the user, finds the corresponding executable program in your system, executes it, and returns the output.</p>
+
+  <div class="breakdown">
+    <div class="breakdown-title">COMMAND STRUCTURE</div>
+    <pre><code><span class="pre-cmd">command</span>  <span class="flag">-flags</span>  <span class="flag">--options=value</span>  <span class="pre-comment">[arguments...]</span>
+  │        │            │               │
+  │        │            │               └── Targets (files, paths, text)
+  │        │            └────────────────── Long-form configuration flags
+  │        └─────────────────────────────── Short switches (often clusterable: -la)
+  └──────────────────────────────────────── The executable binary or builtin</code></pre>
+    <p class="hint"><strong>Example:</strong> <code>ls -l --sort=size /var/log</code> executes <code>ls</code>, turns on long format (<code>-l</code>), orders results by file size (<code>--sort=size</code>), and targets the directory <code>/var/log</code>.</p>
+  </div>
+
+  <h3>Understanding Paths: Absolute vs. Relative</h3>
+  <p>Every single file and directory in Linux branches from a single unified root designated by a forward slash (<code>/</code>). Drives like <code>C:\</code> or <code>D:\</code> do not exist in Linux; secondary drives are simply mounted onto folders in the tree.</p>
+
+  <table>
+    <tr><th>Path Symbol</th><th>Meaning</th><th>Example</th></tr>
+    <tr><td><code>/</code></td><td>The Root directory — top of the entire system</td><td><code>/etc/hosts</code></td></tr>
+    <tr><td><code>~</code></td><td>Your user's home directory (e.g., <code>/home/senku</code>)</td><td><code>~/Documents</code></td></tr>
+    <tr><td><code>.</code></td><td>The current directory you are currently standing in</td><td><code>./script.sh</code></td></tr>
+    <tr><td><code>..</code></td><td>The parent directory one level above</td><td><code>../sibling-folder</code></td></tr>
+    <tr><td><code>-</code></td><td>The previous working directory (like a TV "back" button)</td><td><code>cd -</code></td></tr>
+  </table>
+
+  <div class="callout info">
+    <strong>Pro-tip on Spaces:</strong> Linux paths use spaces as command argument separators. If a folder is named <code>Project Notes</code>, reference it with quotes (<code>cd "Project Notes"</code>) or escape the space with a backslash (<code>cd Project\ Notes</code>).
+  </div>
+</section>
+
+<!-- SECTION 02: NAVIGATION -->
+<section id="navigating" class="cmd-section">
+  <h2><span class="num">02</span> Navigating the Filesystem (<code>pwd</code>, <code>cd</code>, <code>ls</code>)</h2>
+  <p>Moving through directories confidently is the foundational terminal skill. These three commands tell you where you are, move you elsewhere, and show you what is around you.</p>
+
+  <h3><code>pwd</code> — Print Working Directory</h3>
+  <p>Outputs the exact absolute path of the directory your shell is currently operating inside.</p>
+  <pre><code>$ <span class="pre-cmd">pwd</span>
+<span class="pre-out">/home/senku/projects/web-app</span></code></pre>
+  <p class="hint">Flag to know: <code>pwd -P</code> resolves symbolic links to reveal the actual physical hardware path.</p>
+
+  <h3><code>cd</code> — Change Directory</h3>
+  <p>Changes the working directory of the shell session.</p>
+  <table>
+    <tr><th>Usage</th><th>Destination</th></tr>
+    <tr><td><code>cd</code> or <code>cd ~</code></td><td>Jumps straight to your personal home directory (<code>/home/username</code>)</td></tr>
+    <tr><td><code>cd ..</code></td><td>Climbs up one folder into the parent directory</td></tr>
+    <tr><td><code>cd ../..</code></td><td>Climbs up two folder levels in one jump</td></tr>
+    <tr><td><code>cd -</code></td><td>Toggles back to the directory you were in right before the last <code>cd</code></td></tr>
+    <tr><td><code>cd /var/log</code></td><td>Navigates to an absolute path, regardless of where you currently stand</td></tr>
+  </table>
+
+  <h3><code>ls</code> — List Directory Contents</h3>
+  <p>Without arguments, <code>ls</code> lists file and folder names in your current directory. With flags, it becomes one of the most informative diagnostic utilities in Linux.</p>
+
+  <div class="breakdown">
+    <div class="breakdown-title">ANATOMY OF <code>ls -la</code> OUTPUT</div>
+    <pre><code><span class="pre-out">-rw-r--r--   1  senku  developers   4096  Sep 23 10:15  config.json
+drwxr-xr-x   3  senku  developers   4096  Sep 23 10:14  src/
+│└────┬───┘  │    │        │          │        │           │
+│     │      │    │        │          │        │           └── File / Directory Name
+│     │      │    │        │          │        └────────────── Last Modified Timestamp
+│     │      │    │        │          └─────────────────────── Size in bytes (use -h for KB/MB)
+│     │      │    │        └────────────────────────────────── Owning Group
+│     │      │    └─────────────────────────────────────────── Owning User
+│     │      └──────────────────────────────────────────────── Number of hard links
+│     └─────────────────────────────────────────────────────── Permissions (Owner | Group | Other)
+└───────────────────────────────────────────────────────────── Entry type (- = file, d = directory, l = symlink)</span></code></pre>
+  </div>
+
+  <h4>Essential <code>ls</code> Flags</h4>
+  <table>
+    <tr><th>Flag</th><th>Description &amp; Why It Matters</th></tr>
+    <tr><td><code>-l</code></td><td><strong>Long listing:</strong> displays permissions, owner, group, size, and modification date.</td></tr>
+    <tr><td><code>-a</code></td><td><strong>All files:</strong> includes hidden files (files beginning with a dot <code>.</code>, like <code>.env</code> or <code>.bashrc</code>).</td></tr>
+    <tr><td><code>-h</code></td><td><strong>Human readable:</strong> formats byte counts into <code>4K</code>, <code>25M</code>, <code>2.1G</code> (used alongside <code>-l</code>).</td></tr>
+    <tr><td><code>-t</code></td><td><strong>Time sort:</strong> sorts entries by modification time, newest first.</td></tr>
+    <tr><td><code>-r</code></td><td><strong>Reverse:</strong> reverses whichever sorting order is active (e.g., <code>ls -ltr</code> puts newest files at bottom).</td></tr>
+    <tr><td><code>-R</code></td><td><strong>Recursive:</strong> lists contents of all subdirectories down the entire tree.</td></tr>
+  </table>
+
+  <div class="callout info">
+    <strong>Daily Driver Habit:</strong> Use <code>ls -lah</code> as your standard listing command. It shows hidden configuration files, full permissions, and human-friendly file sizes.
+  </div>
+</section>
+
+<!-- SECTION 03: FILES & FOLDERS -->
+<section id="files" class="cmd-section">
+  <h2><span class="num">03</span> Creating, Copying, Moving &amp; Deleting</h2>
+
+  <h3><code>touch</code> — Create Empty Files or Update Timestamps</h3>
+  <p>The fastest way to generate empty placeholder files or trigger file watchers.</p>
+  <pre><code><span class="pre-comment"># Create one or multiple new empty files</span>
+$ <span class="pre-cmd">touch index.html styles.css app.js</span>
+
+<span class="pre-comment"># If the file already exists, touch updates its modification time to right now</span>
+$ <span class="pre-cmd">touch existing-file.txt</span></code></pre>
+
+  <h3><code>mkdir</code> — Make Directories</h3>
+  <p>Creates new folders on the filesystem.</p>
+  <pre><code><span class="pre-comment"># Basic directory creation</span>
+$ <span class="pre-cmd">mkdir project</span>
+
+<span class="pre-comment"># -p (parents): creates intermediate missing directories without failing</span>
+$ <span class="pre-cmd">mkdir -p backend/src/controllers/auth</span>
+
+<span class="pre-comment"># -v (verbose): tells you what it created</span>
+$ <span class="pre-cmd">mkdir -pv api/v1/routes</span>
+<span class="pre-out">mkdir: created directory 'api'
+mkdir: created directory 'api/v1'
+mkdir: created directory 'api/v1/routes'</span></code></pre>
+
+  <h3><code>cp</code> — Copy Files &amp; Directories</h3>
+  <p>Duplicates files or folders from a source to a destination.</p>
+  <table>
+    <tr><th>Command / Flags</th><th>Action &amp; Explanation</th></tr>
+    <tr><td><code>cp file.txt copy.txt</code></td><td>Copies <code>file.txt</code> to <code>copy.txt</code> in the current folder.</td></tr>
+    <tr><td><code>cp file.txt ~/backup/</code></td><td>Copies <code>file.txt</code> into the backup folder, keeping the same name.</td></tr>
+    <tr><td><code>cp -r src/ dist/</code></td><td><strong>Recursive:</strong> Required when copying directories and all nested contents.</td></tr>
+    <tr><td><code>cp -i file.txt target.txt</code></td><td><strong>Interactive:</strong> Prompts you before overwriting an existing destination file.</td></tr>
+    <tr><td><code>cp -p file.txt backup.txt</code></td><td><strong>Preserve:</strong> Preserves original timestamps, file ownership, and permissions mode.</td></tr>
+    <tr><td><code>cp -u source/ dest/</code></td><td><strong>Update:</strong> Copies only files that are newer than destination files or missing.</td></tr>
+  </table>
+
+  <h3><code>mv</code> — Move or Rename</h3>
+  <p>In Linux, renaming a file and moving a file are the identical operation: updating the inode's directory path entry.</p>
+  <pre><code><span class="pre-comment"># Renaming a file in the same folder</span>
+$ <span class="pre-cmd">mv draft.md post.md</span>
+
+<span class="pre-comment"># Moving a file to a new folder</span>
+$ <span class="pre-cmd">mv post.md ~/blog/posts/</span>
+
+<span class="pre-comment"># Moving and renaming simultaneously</span>
+$ <span class="pre-cmd">mv post.md ~/blog/posts/published-post.md</span>
+
+<span class="pre-comment"># Safe flag: -i asks before clobbering an existing file</span>
+$ <span class="pre-cmd">mv -i config.json old-config.json</span></code></pre>
+
+  <h3><code>rm</code> — Remove Files &amp; Directories</h3>
+  <p>Permanently deletes files and folders from the storage filesystem.</p>
+  <pre><code><span class="pre-comment"># Remove a single file</span>
+$ <span class="pre-cmd">rm notes.tmp</span>
+
+<span class="pre-comment"># Remove a directory and all its recursive contents (-r)</span>
+$ <span class="pre-cmd">rm -r old-build/</span>
+
+<span class="pre-comment"># Force removal (-f): suppresses confirmation prompts and ignores nonexistent files</span>
+$ <span class="pre-cmd">rm -rf cache/</span>
+
+<span class="pre-comment"># Interactive removal (-i): prompts for confirmation before every file</span>
+$ <span class="pre-cmd">rm -ri important-folder/</span></code></pre>
+
+  <div class="callout warn">
+    <strong>DANGER ZONE — No Recycle Bin:</strong> Unlike graphical operating systems, the Linux terminal provides <strong>no Trash or Recycle Bin</strong> by default. When <code>rm</code> executes, storage blocks are marked free and data is unlinked. Never run <code>rm -rf /</code>, and beware of rogue spaces in globs (e.g., typing <code>rm -rf / tmp/test</code> instead of <code>rm -rf /tmp/test</code> would wipe your root drive).
+  </div>
+</section>
+
+<!-- SECTION 04: READING FILES -->
+<section id="viewing" class="cmd-section">
+  <h2><span class="num">04</span> Reading &amp; Inspecting File Contents (<code>cat</code>, <code>less</code>, <code>head</code>, <code>tail</code>, <code>wc</code>)</h2>
+
+  <h3><code>cat</code> — Concatenate &amp; Display</h3>
+  <p>Reads files sequentially and writes them to standard output. Best suited for short files (1–50 lines).</p>
+  <pre><code><span class="pre-comment"># Dump file contents into terminal</span>
+$ <span class="pre-cmd">cat /etc/os-release</span>
+
+<span class="pre-comment"># Display line numbers (-n)</span>
+$ <span class="pre-cmd">cat -n server.py</span>
+
+<span class="pre-comment"># Concatenate multiple files into a single destination file</span>
+$ <span class="pre-cmd">cat header.html body.html footer.html > index.html</span></code></pre>
+
+  <h3><code>less</code> — Paginated File Inspection</h3>
+  <p>Opens files in an interactive buffer without loading the entire file into RAM. Essential for viewing large logs, configuration files, and source code.</p>
+  <pre><code>$ <span class="pre-cmd">less /var/log/syslog</span></code></pre>
+
+  <div class="breakdown">
+    <div class="breakdown-title">NAVIGATING INSIDE <code>less</code></div>
+    <table>
+      <tr><th>Key</th><th>Action</th></tr>
+      <tr><td><kbd>Space</kbd> or <kbd>f</kbd></td><td>Scroll forward one full window screen</td></tr>
+      <tr><td><kbd>b</kbd></td><td>Scroll backward one full window screen</td></tr>
+      <tr><td><kbd>j</kbd> / <kbd>↓</kbd></td><td>Scroll down one single line</td></tr>
+      <tr><td><kbd>k</kbd> / <kbd>↑</kbd></td><td>Scroll up one single line</td></tr>
+      <tr><td><kbd>g</kbd></td><td>Jump immediately to the first line of the file</td></tr>
+      <tr><td><kbd>G</kbd></td><td>Jump immediately to the last line of the file</td></tr>
+      <tr><td><kbd>/pattern</kbd> + <kbd>Enter</kbd></td><td>Search forward for text match</td></tr>
+      <tr><td><kbd>n</kbd> / <kbd>N</kbd></td><td>Jump to next / previous search match</td></tr>
+      <tr><td><kbd>q</kbd></td><td>Quit <code>less</code> and return cleanly to your prompt</td></tr>
+    </table>
+  </div>
+
+  <h3><code>head</code> &amp; <code>tail</code> — Viewing Ends of Files</h3>
+  <p>Inspect the start or tail end of files without opening a full viewer.</p>
+  <pre><code><span class="pre-comment"># View the first 10 lines (default)</span>
+$ <span class="pre-cmd">head nginx.conf</span>
+
+<span class="pre-comment"># View the first 25 lines (-n 25)</span>
+$ <span class="pre-cmd">head -n 25 /etc/passwd</span>
+
+<span class="pre-comment"># View the last 15 lines of a file</span>
+$ <span class="pre-cmd">tail -n 15 production.log</span>
+
+<span class="pre-comment"># -f (follow): streams new lines live as other processes append to the file!</span>
+$ <span class="pre-cmd">tail -f /var/log/nginx/access.log</span></code></pre>
+
+  <h3><code>wc</code> — Word, Line &amp; Byte Counter</h3>
+  <pre><code>$ <span class="pre-cmd">wc -l words.txt</span>       <span class="pre-comment"># count lines</span>
+$ <span class="pre-cmd">wc -w essay.md</span>        <span class="pre-comment"># count words</span>
+$ <span class="pre-cmd">wc -c payload.bin</span>     <span class="pre-comment"># count bytes</span></code></pre>
+</section>
+
+<!-- SECTION 05: REDIRECTION & PIPES -->
+<section id="streams" class="cmd-section">
+  <h2><span class="num">05</span> Streams, Redirection &amp; The Power of Pipes</h2>
+  <p>The Unix philosophy states: <em>"Write programs that do one thing and do it well. Write programs to work together. Write programs to handle text streams."</em></p>
+
+  <p>Every process launched by the shell starts with three file descriptors automatically open:</p>
+  <table>
+    <tr><th>Stream</th><th>File Descriptor</th><th>Default Destination</th></tr>
+    <tr><td><strong>Standard Input (<code>stdin</code>)</strong></td><td><code>0</code></td><td>Your keyboard input</td></tr>
+    <tr><td><strong>Standard Output (<code>stdout</code>)</strong></td><td><code>1</code></td><td>Your terminal screen</td></tr>
+    <tr><td><strong>Standard Error (<code>stderr</code>)</strong></td><td><code>2</code></td><td>Your terminal screen (reserved for errors &amp; warnings)</td></tr>
+  </table>
+
+  <h3>Redirection Operators</h3>
+  <pre><code><span class="pre-comment"># 1. > Overwrite stdout to a file (creates file or destroys previous content)</span>
+$ <span class="pre-cmd">echo "version=1.0" > config.env</span>
+
+<span class="pre-comment"># 2. >> Append stdout to a file (appends to end without wiping existing data)</span>
+$ <span class="pre-cmd">echo "port=8080" >> config.env</span>
+
+<span class="pre-comment"># 3. < Feed a file into a command's stdin</span>
+$ <span class="pre-cmd">sort < unsorted-names.txt</span>
+
+<span class="pre-comment"># 4. 2> Redirect standard error only to an error log</span>
+$ <span class="pre-cmd">find / -name "*.conf" 2> errors.log</span>
+
+<span class="pre-comment"># 5. &> or 2>&1 Redirect BOTH stdout and stderr into one single file</span>
+$ <span class="pre-cmd">npm run build > build.log 2>&1</span>
+
+<span class="pre-comment"># 6. /dev/null — The system black hole: discard unwanted output completely</span>
+$ <span class="pre-cmd">command-with-noisy-output > /dev/null 2>&1</span></code></pre>
+
+  <h3>The Pipe Operator (<code>|</code>)</h3>
+  <p>The pipe takes the <strong>standard output</strong> of the command on its left and connects it directly into the <strong>standard input</strong> of the command on its right. You can chain as many commands as needed to build powerful real-time data pipelines.</p>
+
+  <div class="breakdown">
+    <div class="breakdown-title">PRACTICAL PIPELINE EXAMPLES</div>
+    <pre><code><span class="pre-comment"># Count how many system users have /bin/bash as their shell</span>
+$ <span class="pre-cmd">cat /etc/passwd | grep "/bin/bash" | wc -l</span>
+
+<span class="pre-comment"># Extract unique IP addresses from a web log and count occurrences</span>
+$ <span class="pre-cmd">cat access.log | cut -d' ' -f1 | sort | uniq -c | sort -nr | head -n 5</span>
+
+<span class="pre-comment"># tee: print output to terminal AND save it to a file simultaneously</span>
+$ <span class="pre-cmd">make test 2>&1 | tee test-results.log</span></code></pre>
+  </div>
+</section>
+
+<!-- SECTION 06: SEARCHING -->
+<section id="searching" class="cmd-section">
+  <h2><span class="num">06</span> Searching Files &amp; Content (<code>grep</code>, <code>find</code>, <code>which</code>)</h2>
+
+  <h3><code>grep</code> — Search Inside File Contents</h3>
+  <p>Scans files for lines matching regular expressions or plain string patterns.</p>
+  <pre><code><span class="pre-comment"># Basic search inside a specific file</span>
+$ <span class="pre-cmd">grep "DATABASE_URL" .env</span>
+
+<span class="pre-comment"># -i (ignore case)</span>
+$ <span class="pre-cmd">grep -i "error" /var/log/syslog</span>
+
+<span class="pre-comment"># -r or -R (recursive): search all files in current directory and subdirectories</span>
+<span class="pre-comment"># -n (line number): display the exact line number of every match</span>
+<span class="pre-comment"># -I (ignore binary files like compiled assets or images)</span>
+$ <span class="pre-cmd">grep -rnI "SECRET_KEY" .</span>
+
+<span class="pre-comment"># -v (invert match): output lines that do NOT contain the pattern</span>
+$ <span class="pre-cmd">grep -v "^#" config.conf</span>   <span class="pre-comment"># strips out comment lines starting with #</span>
+
+<span class="pre-comment"># -c (count): returns the number of matching lines</span>
+$ <span class="pre-cmd">grep -c "404" access.log</span>
+
+<span class="pre-comment"># -E (extended regex): search for multiple alternate patterns</span>
+$ <span class="pre-cmd">grep -E "FATAL|CRITICAL|PANIC" app.log</span></code></pre>
+
+  <h3><code>find</code> — Search Directory Trees for Files by Metadata</h3>
+  <p>Unlike <code>grep</code> which searches file contents, <code>find</code> traverses directory trees looking for file system nodes based on filename, size, age, or permissions.</p>
+
+  <table>
+    <tr><th>Example Query</th><th>What It Does</th></tr>
+    <tr><td><code>find . -name "*.js"</code></td><td>Finds all files ending in <code>.js</code> from the current folder down.</td></tr>
+    <tr><td><code>find . -iname "readme*"</code></td><td>Case-insensitive search (matches <code>README.md</code>, <code>readme.txt</code>).</td></tr>
+    <tr><td><code>find /var/log -type f -name "*.log"</code></td><td>Restricts search to regular files (<code>-type f</code>), ignoring folders.</td></tr>
+    <tr><td><code>find . -type d -name "node_modules"</code></td><td>Finds directories only (<code>-type d</code>).</td></tr>
+    <tr><td><code>find . -size +100M</code></td><td>Finds all files strictly larger than 100 Megabytes.</td></tr>
+    <tr><td><code>find . -mtime -3</code></td><td>Finds files modified within the last 3 days.</td></tr>
+    <tr><td><code>find . -name "*.tmp" -delete</code></td><td>Finds all temporary files and immediately deletes them.</td></tr>
+    <tr><td><code>find . -name "*.log" -exec gzip {} \;</code></td><td>Runs a shell command on every discovered match (<code>{}</code> is replaced by file path).</td></tr>
+  </table>
+
+  <h3><code>which</code> &amp; <code>whereis</code> — Locating Commands</h3>
+  <pre><code><span class="pre-comment"># which: reveals which executable binary runs when you type a command (checks $PATH)</span>
+$ <span class="pre-cmd">which node</span>
+<span class="pre-out">/usr/local/bin/node</span>
+
+<span class="pre-comment"># whereis: finds the binary, source code, and manual page locations</span>
+$ <span class="pre-cmd">whereis python3</span>
+<span class="pre-out">python3: /usr/bin/python3 /usr/lib/python3 /usr/share/man/man1/python3.1.gz</span></code></pre>
+</section>
+
+<!-- SECTION 07: PERMISSIONS -->
+<section id="permissions" class="cmd-section">
+  <h2><span class="num">07</span> Permissions &amp; Ownership (<code>chmod</code>, <code>chown</code>, <code>sudo</code>)</h2>
+  <p>Linux is a multi-user operating system with a strict access control matrix. Every file and directory is owned by one <strong>User</strong> and assigned to one <strong>Group</strong>.</p>
+
+  <div class="breakdown">
+    <div class="breakdown-title">PERMISSION TRIPLETS DECODED: <code>-rwxr-xr--</code></div>
+    <table>
+      <tr><th>Class</th><th>Letters</th><th>Numeric Value</th><th>Meaning</th></tr>
+      <tr><td><strong>User (Owner)</strong></td><td><code>rwx</code></td><td>4 + 2 + 1 = <strong>7</strong></td><td>Read, Write, and Execute privileges</td></tr>
+      <tr><td><strong>Group</strong></td><td><code>r-x</code></td><td>4 + 0 + 1 = <strong>5</strong></td><td>Read and Execute privileges (no write/edit)</td></tr>
+      <tr><td><strong>Others (World)</strong></td><td><code>r--</code></td><td>4 + 0 + 0 = <strong>4</strong></td><td>Read only (cannot edit or execute)</td></tr>
+    </table>
+    <p class="hint">What <code>x</code> (execute) means on a directory: You cannot <code>cd</code> into a directory or read files inside it without the execute bit!</p>
+  </div>
+
+  <h3><code>chmod</code> — Change File Mode / Permissions</h3>
+  <p>Can be executed using numeric octal notation or symbolic notation.</p>
+
+  <div class="grid2">
+    <div>
+      <h4>Octal Notation</h4>
+      <p><code>chmod 755 script.sh</code><br><span class="hint">User: rwx (7), Group: rx (5), Others: rx (5). Standard for scripts &amp; executables.</span></p>
+      <p><code>chmod 644 file.txt</code><br><span class="hint">User: rw (6), Group: r (4), Others: r (4). Standard for documents &amp; web assets.</span></p>
+      <p><code>chmod 600 id_rsa</code><br><span class="hint">User: rw (6), Group: 0, Others: 0. Private keys; no one else can read.</span></p>
+      <p><code>chmod -R 755 /var/www</code><br><span class="hint">Applies permissions recursively to all nested files and folders.</span></p>
+    </div>
+    <div>
+      <h4>Symbolic Notation</h4>
+      <p><code>chmod +x deploy.sh</code><br><span class="hint">Adds execute permission for everyone.</span></p>
+      <p><code>chmod u+w file.txt</code><br><span class="hint">Grants write permission to the file owner (user).</span></p>
+      <p><code>chmod go-rwx secret.env</code><br><span class="hint">Revokes all permissions from group and others.</span></p>
+      <p><code>chmod a=rw shared.txt</code><br><span class="hint">Sets read/write for all (user, group, and others).</span></p>
+    </div>
+  </div>
+
+  <h3><code>chown</code> — Change Ownership &amp; Group</h3>
+  <p>Requires administrative permissions (via <code>sudo</code>).</p>
+  <pre><code><span class="pre-comment"># Change the owner of a file</span>
+$ <span class="pre-cmd">sudo chown senku app.py</span>
+
+<span class="pre-comment"># Change both user owner and group owner at once (user:group)</span>
+$ <span class="pre-cmd">sudo chown senku:developers /opt/project</span>
+
+<span class="pre-comment"># Recursively change ownership for an entire directory tree (-R)</span>
+$ <span class="pre-cmd">sudo chown -R www-data:www-data /var/www/html</span></code></pre>
+
+  <h3><code>sudo</code> &amp; Superuser Privileges</h3>
+  <p><code>sudo</code> (SuperUser DO) allows authorized users to run security-sensitive commands as <code>root</code> (the all-powerful system administrator).</p>
+  <pre><code><span class="pre-comment"># Update package repositories (requires root)</span>
+$ <span class="pre-cmd">sudo apt update</span>
+
+<span class="pre-comment"># Re-run your last command with sudo if you forgot it (lifesaver!)</span>
+$ <span class="pre-cmd">sudo !!</span>
+
+<span class="pre-comment"># Spawn a full interactive root shell (use sparingly!)</span>
+$ <span class="pre-cmd">sudo -i</span></code></pre>
+</section>
+
+<!-- SECTION 08: PROCESSES & SYSTEM MONITORING -->
+<section id="processes" class="cmd-section">
+  <h2><span class="num">08</span> Processes, Performance &amp; Storage Monitoring</h2>
+
+  <h3><code>ps</code> — Process Snapshot</h3>
+  <p>Reports a snapshot of currently running processes.</p>
+  <pre><code><span class="pre-comment"># ps aux: View every process running on the entire system</span>
+$ <span class="pre-cmd">ps aux | head -n 5</span>
+<span class="pre-out">USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.1 168432 11980 ?        Ss   08:00   0:02 /sbin/init
+senku     1420  1.2  2.4 928312 48920 pts/0    S+   09:15   0:14 node server.js</span>
+
+<span class="pre-comment"># Locate a specific process PID using grep</span>
+$ <span class="pre-cmd">ps aux | grep nginx</span></code></pre>
+
+  <h3><code>top</code> &amp; <code>htop</code> — Real-time Process Monitors</h3>
+  <p>Launches a live updating view of CPU usage, memory consumption, swap space, and per-process load.</p>
+  <div class="breakdown">
+    <div class="breakdown-title">KEY COMMANDS INSIDE <code>top</code></div>
+    <table>
+      <tr><th>Key</th><th>Function</th></tr>
+      <tr><td><kbd>q</kbd></td><td>Quit and return to prompt</td></tr>
+      <tr><td><kbd>M</kbd></td><td>Sort process list by Memory consumption (%MEM)</td></tr>
+      <tr><td><kbd>P</kbd></td><td>Sort process list by CPU load (%CPU)</td></tr>
+      <tr><td><kbd>k</kbd></td><td>Prompt for a PID to terminate directly from top</td></tr>
+      <tr><td><kbd>1</kbd></td><td>Expand/collapse per-CPU core breakdown</td></tr>
+    </table>
+  </div>
+
+  <h3><code>kill</code> &amp; <code>pkill</code> — Terminating Processes</h3>
+  <p>Processes are stopped by sending them asynchronous Unix signals.</p>
+  <table>
+    <tr><th>Command</th><th>Signal</th><th>Behavior</th></tr>
+    <tr><td><code>kill 1420</code></td><td><code>SIGTERM (15)</code></td><td><strong>Graceful:</strong> Asks the process to safely flush buffers, close database handles, and exit cleanly.</td></tr>
+    <tr><td><code>kill -9 1420</code></td><td><code>SIGKILL (9)</code></td><td><strong>Forceful:</strong> The Linux kernel immediately nukes the process memory. Cannot be caught, handled, or blocked. Use only when process hangs.</td></tr>
+    <tr><td><code>killall node</code></td><td><code>SIGTERM (15)</code></td><td>Terminates all processes matching the binary name <code>node</code>.</td></tr>
+    <tr><td><code>pkill -f "worker.py"</code></td><td><code>SIGTERM (15)</code></td><td>Matches and kills processes based on full command-line arguments.</td></tr>
+  </table>
+
+  <h3>Storage &amp; Memory Diagnostics (<code>df</code>, <code>du</code>, <code>free</code>)</h3>
+  <pre><code><span class="pre-comment"># df -h: Disk Free — check available filesystem storage in human format (GB/MB)</span>
+$ <span class="pre-cmd">df -h</span>
+<span class="pre-out">Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        50G   22G   26G  46% /
+/dev/sdb1       500G  120G  355G  26% /data</span>
+
+<span class="pre-comment"># du -sh: Disk Usage — calculate total storage consumed by a directory</span>
+$ <span class="pre-cmd">du -sh /var/log</span>
+<span class="pre-out">1.4G    /var/log</span>
+
+<span class="pre-comment"># Find the top 10 largest folders/files in the current directory</span>
+$ <span class="pre-cmd">du -ah . | sort -rh | head -n 10</span>
+
+<span class="pre-comment"># free -h: Inspect physical RAM and swap space</span>
+$ <span class="pre-cmd">free -h</span>
+<span class="pre-out">              total        used        free      shared  buff/cache   available
+Mem:           15Gi       4.2Gi       6.1Gi       320Mi       5.1Gi        10Gi
+Swap:         2.0Gi          0B       2.0Gi</span></code></pre>
+</section>
+
+<!-- SECTION 09: NETWORKING -->
+<section id="network" class="cmd-section">
+  <h2><span class="num">09</span> Networking &amp; Remote Transfers (<code>ping</code>, <code>curl</code>, <code>ip</code>, <code>ss</code>)</h2>
+
+  <h3><code>ping</code> — Test Network Latency &amp; Reachability</h3>
+  <pre><code><span class="pre-comment"># Linux ping runs forever until interrupted! Always use -c to set packet count</span>
+$ <span class="pre-cmd">ping -c 4 google.com</span>
+<span class="pre-out">PING google.com (142.250.190.46) 56(84) bytes of data.
+64 bytes from ... icmp_seq=1 ttl=117 time=12.4 ms
+--- google.com ping statistics ---
+4 packets transmitted, 4 received, 0% packet loss</span></code></pre>
+
+  <h3><code>curl</code> — Transfer Data Across URLs</h3>
+  <p>The standard tool for interacting with REST APIs, testing web servers, and downloading assets.</p>
+  <pre><code><span class="pre-comment"># Simple GET request dumped to stdout</span>
+$ <span class="pre-cmd">curl https://api.github.com/zen</span>
+
+<span class="pre-comment"># -I (head): Fetch HTTP response headers only (status code, content-type, server)</span>
+$ <span class="pre-cmd">curl -I https://example.com</span>
+
+<span class="pre-comment"># -O (remote name) & -L (follow redirects): Download file and save with original filename</span>
+$ <span class="pre-cmd">curl -LO https://github.com/torvalds/linux/archive/refs/tags/v6.8.tar.gz</span>
+
+<span class="pre-comment"># -d (data) & -H (header): Send JSON payload via HTTP POST</span>
+$ <span class="pre-cmd">curl -X POST https://api.example.com/users \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Senku", "role": "engineer"}'</span></code></pre>
+
+  <h3><code>ip</code> &amp; <code>ss</code> — Network Interfaces &amp; Sockets</h3>
+  <pre><code><span class="pre-comment"># ip addr (or ip a): Display IP addresses and active network interfaces</span>
+$ <span class="pre-cmd">ip a</span>
+
+<span class="pre-comment"># ss -tulpn: List all listening TCP/UDP ports and the process using each port</span>
+<span class="pre-comment"># (-t: TCP, -u: UDP, -l: listening, -p: process, -n: numeric port)</span>
+$ <span class="pre-cmd">sudo ss -tulpn</span>
+<span class="pre-out">Netid  State   Recv-Q  Send-Q   Local Address:Port   Peer Address:Port  Process
+tcp    LISTEN  0       128            0.0.0.0:22          0.0.0.0:*      users:(("sshd",pid=842,fd=3))
+tcp    LISTEN  0       511            0.0.0.0:80          0.0.0.0:*      users:(("nginx",pid=1120,fd=6))</span></code></pre>
+</section>
+
+<!-- SECTION 10: FILESYSTEM HIERARCHY -->
+<section id="fhs" class="cmd-section">
+  <h2><span class="num">10</span> The Linux Filesystem Hierarchy Standard (FHS)</h2>
+  <p>Unlike Windows drive letters (<code>C:</code>, <code>D:</code>), every resource in Linux is unified under root (<code>/</code>). Understanding where files live allows you to find configs, logs, and devices instantly.</p>
+
+  <div class="tree">/ (Root Directory)
+├── <strong>bin</strong>     → Essential system command binaries (ls, cp, rm, bash)
+├── <strong>boot</strong>    → Linux kernel, initramfs images, and GRUB bootloader
+├── <strong>dev</strong>     → Device nodes representing hardware (/dev/sda disk, /dev/null, /dev/random)
+├── <strong>etc</strong>     → System-wide configuration files (nginx.conf, passwd, hosts, fstab)
+├── <strong>home</strong>    → Personal user folders (/home/senku) containing documents, desktop, and configs
+├── <strong>lib</strong>     → Shared libraries and kernel modules required by system binaries
+├── <strong>media</strong>   → Auto-mounted removable storage media (USB drives, external SSDs)
+├── <strong>mnt</strong>     → Temporary manual mount points for sysadmins
+├── <strong>opt</strong>     → Optional add-on third-party software packages (e.g., /opt/google/chrome)
+├── <strong>proc</strong>    → Virtual pseudo-filesystem exposing real-time kernel data & process states
+├── <strong>root</strong>    → Home directory of the root user (separate from regular /home)
+├── <strong>sbin</strong>    → System administrative binaries (fdisk, reboot, iptables)
+├── <strong>sys</strong>     → Virtual pseudo-filesystem exposing kernel hardware devices & drivers
+├── <strong>tmp</strong>     → Temporary scratch files (automatically purged on reboot or timer)
+├── <strong>usr</strong>     → User utilities, applications, libraries, and documentation (/usr/bin, /usr/lib)
+└── <strong>var</strong>     → Variable persistent data: logs (/var/log), mail, caches, and web roots (/var/www)</div>
+</section>
+
+<!-- SECTION 11: SHORTCUTS & ERGONOMICS -->
+<section id="shortcuts" class="cmd-section">
+  <h2><span class="num">11</span> Terminal Muscle Memory &amp; Superpowers</h2>
+  <p>Fluency in Linux comes down to keyboard shortcuts and shell expansion techniques that eliminate tedious typing.</p>
+
+  <h3>Key Navigation &amp; Control Shortcuts</h3>
+  <table>
+    <tr><th>Shortcut</th><th>Action</th></tr>
+    <tr><td><kbd>Tab</kbd></td><td><strong>Autocomplete:</strong> Press once to complete a command or file path; press twice to show all matching choices.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>C</kbd></td><td><strong>Interrupt (SIGINT):</strong> Aborts and kills the foreground program running right now.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td><strong>Suspend (SIGTSTP):</strong> Pauses running program and sends it to background (type <code>fg</code> to resume).</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>L</kbd></td><td><strong>Clear:</strong> Clears terminal screen while keeping your current command line intact.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>R</kbd></td><td><strong>Reverse History Search:</strong> Start typing any word to recall past commands from history!</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>A</kbd></td><td>Jump cursor to the <strong>beginning</strong> of the command line.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>E</kbd></td><td>Jump cursor to the <strong>end</strong> of the command line.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>U</kbd></td><td>Delete everything from the cursor back to the start of the line.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Delete everything from the cursor forward to the end of the line.</td></tr>
+    <tr><td><kbd>Ctrl</kbd> + <kbd>W</kbd></td><td>Cut the single word immediately preceding the cursor.</td></tr>
+  </table>
+
+  <h3>Shell Expansion Shortcuts</h3>
+  <pre><code><span class="pre-comment"># 1. !! — Rerun the exact previous command</span>
+$ <span class="pre-cmd">apt update</span>           <span class="pre-comment"># Fails: Permission denied</span>
+$ <span class="pre-cmd">sudo !!</span>              <span class="pre-comment"># Reruns as: sudo apt update</span>
+
+<span class="pre-comment"># 2. !$ — Reuses the last argument from previous command</span>
+$ <span class="pre-cmd">mkdir -p /var/www/my-new-site</span>
+$ <span class="pre-cmd">cd !$</span>                <span class="pre-comment"># Expands to: cd /var/www/my-new-site</span>
+
+<span class="pre-comment"># 3. Brace Expansion {} — Generate multiple targets rapidly</span>
+$ <span class="pre-cmd">touch file_{1..5}.txt</span>          <span class="pre-comment"># Creates file_1.txt, file_2.txt ... file_5.txt</span>
+$ <span class="pre-cmd">cp config.json{,.bak}</span>          <span class="pre-comment"># Duplicates config.json to config.json.bak</span>
+$ <span class="pre-cmd">mkdir -p app/{src,tests,dist}</span>  <span class="pre-comment"># Creates app/src, app/tests, and app/dist</span></code></pre>
+</section>
+
+<!-- SECTION 12: PRACTICAL LAB -->
+<section id="lab" class="cmd-section practice">
+  <h2><span class="num">12</span> Guided Hands-on Practice Lab</h2>
+  <p class="hint">Type and execute each step sequentially in your terminal. This exercises the full lifecycle: directory management, file creation, writing, permissions, pipelines, searching, inspection, and clean removal.</p>
+
+  <pre><code><span class="pre-comment"># Step 1: Create a sandbox directory and step inside</span>
+$ <span class="pre-cmd">mkdir -p ~/linux-lab/data &amp;&amp; cd ~/linux-lab</span>
+
+<span class="pre-comment"># Step 2: Generate sample data files</span>
+$ <span class="pre-cmd">echo "alpha error: connection timeout" > data/log1.txt</span>
+$ <span class="pre-cmd">echo "beta info: service started"     > data/log2.txt</span>
+$ <span class="pre-cmd">echo "gamma error: disk full"         >> data/log1.txt</span>
+
+<span class="pre-comment"># Step 3: Inspect directory with full metadata</span>
+$ <span class="pre-cmd">ls -lah data/</span>
+
+<span class="pre-comment"># Step 4: Search for errors across all files recursively</span>
+$ <span class="pre-cmd">grep -rnI "error" data/</span>
+
+<span class="pre-comment"># Step 5: Pipe, sort, and count lines</span>
+$ <span class="pre-cmd">cat data/log1.txt data/log2.txt | grep "error" | wc -l</span>
+
+<span class="pre-comment"># Step 6: Create an executable script</span>
+$ <span class="pre-cmd">echo 'echo "Hello from Linux Lab $(date)"' > run.sh</span>
+
+<span class="pre-comment"># Step 7: Grant execute permission and run it</span>
+$ <span class="pre-cmd">chmod +x run.sh &amp;&amp; ./run.sh</span>
+
+<span class="pre-comment"># Step 8: Verify active disk usage of our sandbox</span>
+$ <span class="pre-cmd">du -sh ~/linux-lab</span>
+
+<span class="pre-comment"># Step 9: Clean up completely</span>
+$ <span class="pre-cmd">cd ~ &amp;&amp; rm -rf ~/linux-lab</span></code></pre>
+</section>
+
+<footer>
+  <p>RULE №1 OF THE TERMINAL: Always read and understand a command before pressing Enter — especially with <code>sudo</code>, <code>rm</code>, or redirection operators.</p>
+</footer>
+
+</div>
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.textContent = newTheme === 'dark' ? '☾ Dark' : '☀ Light';
+  }
+}
+</script>
+</body>
+</html>
