@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Linux 101 — Master the Terminal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root, [data-theme="light"] {
+  --bg: #FAF9F5;
+  --paper: #FFFFFF;
+  --ink: #1B211E;
+  --muted: #5C635B;
+  --accent: #226744;
+  --accent-soft: #EAF2EC;
+  --accent-border: #9DC3AC;
+  --line: #E2DFD4;
+  --code-bg: #F1EFE6;
+  --code-header: #E7E4D9;
+  --badge-bg: #E4E1D5;
+  color-scheme: light;
+  box-sizing: border-box;
+}
+
+[data-theme="dark"] {
+  --bg: #141715;
+  --paper: #1B1F1C;
+  --ink: #E6EAE5;
+  --muted: #959E93;
+  --accent: #52B788;
+  --accent-soft: #1C2D23;
+  --accent-border: #2D5A40;
+  --line: #29302B;
+  --code-bg: #202622;
+  --code-header: #262E29;
+  --badge-bg: #2B332D;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.68;
+}
+
+.wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+/* Nav / Top Header */
+.top-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.theme-toggle-btn {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Hero Section */
+.hero {
+  text-align: left;
+  padding: 24px 0 40px;
+}
+
+.kicker {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13.5px;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin: 0 0 12px;
+}
+.kicker::before {
+  content: "$ ";
+  color: var(--accent);
+  font-weight: 600;
+}
+
+h1 {
+  font-family: 'IBM Plex Serif', serif;
+  font-weight: 600;
+  font-size: 3rem;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  letter-spacing: -0.015em;
+}
+
+.dek {
+  color: var(--muted);
+  font-size: 1.15rem;
+  line-height: 1.6;
+  max-width: 65ch;
+  margin: 0 0 32px;
+}
+
+/* Call To Action Buttons */
+.cta-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 44px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #FFFFFF;
+  border: 1px solid var(--accent);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.btn-primary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.12);
+}
+
+.btn-secondary {
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line);
+}
+
+.btn-secondary:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+/* Terminal Preview Card */
+.terminal-card {
+  background: var(--code-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 56px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.terminal-header {
+  background: var(--code-header);
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+  border-bottom: 1px solid var(--line);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.dot-red { background: #e06c75; }
+.dot-yellow { background: #e5c07b; }
+.dot-green { background: #98c379; }
+
+.terminal-body {
+  padding: 20px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.88rem;
+  line-height: 1.7;
+  overflow-x: auto;
+  margin: 0;
+}
+
+.prompt { color: var(--accent); font-weight: 600; }
+.output { color: var(--muted); }
+.success { color: var(--accent); font-weight: 500; }
+
+/* Topics Grid */
+.section-title {
+  font-family: 'IBM Plex Serif', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.section-desc {
+  color: var(--muted);
+  font-size: 0.98rem;
+  margin: 0 0 24px;
+}
+
+.topics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.topic-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 18px 20px;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+.topic-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.topic-num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.topic-title {
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+
+.topic-desc {
+  font-size: 0.88rem;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Footer */
+footer {
+  margin-top: 64px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.84rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+footer a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  h1 { font-size: 2.2rem; }
+  .wrap { padding: 24px 16px 64px; }
+  .cta-group { flex-direction: column; align-items: stretch; }
+  .btn { text-align: center; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav class="top-nav">
+    <a href="https://oscode-iiitdwd.github.io/linux-101/" class="brand">
+      <span>🐧</span> OSCode IIITDWD · linux-101
+    </a>
+    <div class="nav-actions">
+      <button id="theme-toggle" class="theme-toggle-btn" onclick="toggleTheme()" aria-label="Toggle theme">☀ Light</button>
+    </div>
+  </nav>
+
+  <main>
+    <section class="hero">
+      <p class="kicker">OSCode · Hands-on Workshop &amp; Reference Guide</p>
+      <h1>Linux Basics</h1>
+      <p class="dek">
+        A practical, beginner-friendly manual designed to help you conquer the terminal — from fundamental navigation and file operations to pipes, permissions, and process management.
+      </p>
+
+      <div class="cta-group">
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html" class="btn btn-primary">
+          Get Started &rarr;
+        </a>
+        <a href="https://github.com/OSCode-IIITDWD/linux-101" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+          View on GitHub &nearr;
+        </a>
+      </div>
+    </section>
+
+    <div class="terminal-card">
+      <div class="terminal-header">
+        <span class="dot dot-red"></span>
+        <span class="dot dot-yellow"></span>
+        <span class="dot dot-green"></span>
+        <span style="margin-left: 8px;">bash &mdash; 80x24</span>
+      </div>
+      <pre class="terminal-body"><code><span class="prompt">$</span> git clone https://github.com/OSCode-IIITDWD/linux-101.git
+<span class="output">Cloning into 'linux-101'...
+remote: Enumerating objects, done.</span>
+<span class="prompt">$</span> cd linux-101
+<span class="prompt">$</span> cat << 'EOF'
+Welcome to Linux Basics! Click "Get Started" to dive into the guide.
+EOF
+<span class="success">✔ Ready to explore 12 comprehensive terminal modules.</span></code></pre>
+    </div>
+
+    <section>
+      <h2 class="section-title">What You'll Learn</h2>
+      <p class="section-desc">Structured modules taking you from first commands to essential system mastery.</p>
+
+      <div class="topics-grid">
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#wsl" class="topic-card">
+          <div class="topic-num">MODULE 00</div>
+          <div class="topic-title">WSL &amp; Setup</div>
+          <p class="topic-desc">Setting up Ubuntu on Windows via WSL with zero virtual machine overhead.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#anatomy" class="topic-card">
+          <div class="topic-num">MODULE 01</div>
+          <div class="topic-title">Command Anatomy &amp; Paths</div>
+          <p class="topic-desc">Learn commands, flags, arguments, and absolute vs. relative paths.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#navigating" class="topic-card">
+          <div class="topic-num">MODULE 02</div>
+          <div class="topic-title">Filesystem Navigation</div>
+          <p class="topic-desc">Moving around swiftly using <code>pwd</code>, <code>cd</code>, and power flags for <code>ls</code>.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#files" class="topic-card">
+          <div class="topic-num">MODULE 03</div>
+          <div class="topic-title">File Operations</div>
+          <p class="topic-desc">Creating, copying, moving, and safely deleting files and folders.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#streams" class="topic-card">
+          <div class="topic-num">MODULE 05</div>
+          <div class="topic-title">Pipes &amp; Redirection</div>
+          <p class="topic-desc">Chaining commands together with standard streams, <code>|</code>, and <code>&gt;</code>.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#permissions" class="topic-card">
+          <div class="topic-num">MODULE 07</div>
+          <div class="topic-title">Permissions &amp; Ownership</div>
+          <p class="topic-desc">Demystifying <code>rwx</code>, octal modes, <code>chmod</code>, and <code>chown</code>.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#processes" class="topic-card">
+          <div class="topic-num">MODULE 08</div>
+          <div class="topic-title">Processes &amp; Storage</div>
+          <p class="topic-desc">Monitoring CPU/RAM, inspecting disks, and managing running jobs.</p>
+        </a>
+
+        <a href="Linux%20Basics%20%E2%80%94%20A%20Terminal%20Primer.html#lab" class="topic-card">
+          <div class="topic-num">MODULE 12</div>
+          <div class="topic-title">Practical Lab</div>
+          <p class="topic-desc">A guided end-to-end sandbox session putting everything into practice.</p>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>OSCode &bull; IIIT Dharwad</div>
+    <div>
+      <a href="https://oscode-iiitdwd.github.io/linux-101/">oscode-iiitdwd.github.io/linux-101</a>
+    </div>
+  </footer>
+
+</div>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  const newTheme = isDark ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  const btn = document.getElementById('theme-toggle');
+  if (btn) {
+    btn.textContent = newTheme === 'dark' ? '☾ Dark' : '☀ Light';
+  }
+}
+</script>
+</body>
+</html>
